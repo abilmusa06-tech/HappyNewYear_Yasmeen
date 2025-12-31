@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Happy New Year 2026</title>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: radial-gradient(circle at bottom, #0a0a23, #000);
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      /* ===== MAIN TEXT ===== */
+      .text {
+        position: absolute;
+        top: 40%;
+        width: 100%;
+        text-align: center;
+        color: gold;
+        font-weight: bold;
+        letter-spacing: 8px;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .letter {
+        display: inline-block;
+        font-size: 4rem;
+        opacity: 0;
+        transform: scale(0.7);
+        animation: popIn 1.2s forwards;
+      }
+
+      .popOut {
+        animation: popOut 1.2s forwards;
+      }
+
+      @keyframes popIn {
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes popOut {
+        to {
+          opacity: 0;
+          transform: scale(0.7);
+        }
+      }
+
+      /* ===== CLOSING RELIGI ===== */
+      .closing {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        text-align: center;
+        font-size: 2rem;
+        line-height: 1.6;
+        color: #ffffff;
+        letter-spacing: 2px;
+        opacity: 0;
+        z-index: 20;
+        pointer-events: none;
+      }
+
+      .closing.show {
+        animation: closingSlow 5s forwards;
+      }
+
+      @keyframes closingSlow {
+        0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.96);
+        }
+        50% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="text" class="text"></div>
+    <div id="closing" class="closing"></div>
+    <canvas id="canvas"></canvas>
+
+    <!-- MUSIC -->
+    <audio id="bgMusic" loop>
+      <source src="hmm.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+
+      window.onresize = () => {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+      };
+
+      const colors = ["#ffd700", "#ffffff", "#1e90ff"];
+
+      /* ===== FIREWORK ===== */
+      class Firework {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height * 0.6;
+          this.particles = [];
+
+          for (let i = 0; i < 40; i++) {
+            this.particles.push({
+              x: this.x,
+              y: this.y,
+              vx: (Math.random() - 0.5) * 3,
+              vy: (Math.random() - 0.5) * 3,
+              life: 120,
+              color: colors[Math.floor(Math.random() * colors.length)],
+            });
+          }
+        }
+      }
+
+      let fireworks = [];
+
+      setInterval(() => {
+        fireworks.push(new Firework());
+      }, 700);
+
+      function animate() {
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        fireworks.forEach((fw, i) => {
+          fw.particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life--;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, 2, 2);
+          });
+          fw.particles = fw.particles.filter((p) => p.life > 0);
+          if (fw.particles.length === 0) fireworks.splice(i, 1);
+        });
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      /* ===== TEXT SEQUENCE ===== */
+      const textDiv = document.getElementById("text");
+
+      function showWord(word, delay = 200) {
+        textDiv.innerHTML = "";
+        [...word].forEach((c, i) => {
+          const span = document.createElement("span");
+          span.className = "letter";
+          span.style.animationDelay = `${i * delay}ms`;
+          span.textContent = c;
+          textDiv.appendChild(span);
+        });
+      }
+
+      function hideText() {
+        document
+          .querySelectorAll(".letter")
+          .forEach((l) => l.classList.add("popOut"));
+      }
+
+      setTimeout(() => showWord("HAPPY"), 800);
+      setTimeout(hideText, 4000);
+
+      setTimeout(() => showWord("NEW YEAR"), 4800);
+      setTimeout(hideText, 8200);
+
+      setTimeout(() => showWord("2026"), 9000);
+      setTimeout(hideText, 12500);
+
+      /* ===== CLOSING DOA ===== */
+      setTimeout(() => {
+        const closing = document.getElementById("closing");
+        closing.textContent =
+          "Ya Allah, jadikan tahun ini tahun penuh keberkahan, kesehatan, dan kebaikan bagi yasmeenn dan keluarga yasmeen juga terus semoga yasmeen dapat berubah seperti yang ia katakann aamiinn,dan akuu sebagai abil siap menemani yasmeen dari awal tahun ini agar kita sama sama berkembang buat kedepanyaa,KITA SAMA SAMA GROW UP YAA!!";
+        closing.classList.add("show");
+      }, 14000);
+
+      /* ===== MUSIC START ===== */
+      const music = document.getElementById("bgMusic");
+      document.addEventListener(
+        "click",
+        () => {
+          music.volume = 0.5;
+          music.play();
+        },
+        { once: true }
+      );
+    </script>
+  </body>
+</html>
